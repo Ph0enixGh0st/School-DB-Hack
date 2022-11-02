@@ -15,13 +15,13 @@ python scripts.py -n "{Schoolkid full name in Russian}" -s "{Subject name in Rus
 Only one name and one subject at a time.
 All words in Full Name and Subject are to be capitalized.
 
-# def fix_marks(child)
+## def fix_marks(child)
 The function takes schoolkid's name as an argument and turns all grades lower than '4' (i.e. 2 and 3) into '5' for this student.
 
 ## def remove_chastisements(child):
 The function takes schoolkid's name as an argument and deletes all chastisements from the database.
 
-# def create_commendation(child, subject):
+## def create_commendation(child, subject):
 The function takes schoolkid's name and subject to create appraisal for the subject's last lesson taken by the student.
 
 ### Project Goals
