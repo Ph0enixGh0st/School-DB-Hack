@@ -5,16 +5,51 @@ import django.core.exceptions
 from datacenter.models import Chastisement, Commendation, Lesson, Mark, Schoolkid, Subject
 
 
-def fix_marks(child):
-	Mark.objects.filter(schoolkid=child, points__lt=4).update(points=5)
+def fix_marks(child.id):
+	Mark.objects.filter(schoolkid_id=child.id, points__lt=4).update(points=5)
 
 
-def remove_chastisements(child):
-	Chastisement.objects.filter(schoolkid=child).delete()
+def remove_chastisements(child.id):
+	Chastisement.objects.filter(schoolkid_id=child.id).delete()
 
 
-def create_commendation(child, subject):
+def create_commendation(child.id, school_subject, random_appraisal):
 
+	lesson = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
+	lessons_pool = Lesson.objects.filter(year_of_study=child.year_of_study, 
+                                            group_letter=child.group_letter, 
+                                            subject__title=lesson).order_by('-date')
+
+	Commendation.objects.create(text=random_appraisal, created=lessons_pool.date, 
+                                schoolkid_id=child.id, subject=lessons_pool.subject, 
+                                teacher=lessons_pool.teacher)
+
+
+def main():
+
+	parser = argparse.ArgumentParser(description="The script hacks the school database")
+	parser.add_argument("-n", "--name", default="", help="Enter full name here", type=str)
+	parser.add_argument("-d", "--discipline", default="", help="Enter school subject here", type=str)
+	args = parser.parse_args()
+	name = args.name
+	school_subject = args.discipline
+
+	if not name:
+		print("Empty name provided")
+	try:
+		child = Schoolkid.objects.get(full_name__contains=name)
+	except Model.MultipleObjectsReturned:
+		print("There are multiple IDs with provided name.")
+	except Model.ObjectDoesNotExist:
+		print("Schoolkid entry doesn't exist in database.")
+
+	if not school_subject:
+		print("Empty school_subject provided")
+	try:
+        school_subject = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
+    except Model.ObjectDoesNotExist:
+        print(f"{school_subject} not found")
+    
     appraisals = [
         "Молодец!",
         "Отлично!",
@@ -49,39 +84,10 @@ def create_commendation(child, subject):
         ]
     
     random_appraisal = random.choice(appraisals)
-    lesson = Subject.objects.get(title=subject, year_of_study=child.year_of_study)
-    last_lesson_pick = Lesson.objects.filter(year_of_study=child.year_of_study, group_letter=child.group_letter, subject__title=lesson).order_by('-date')
-    Commendation.objects.create(text=random_appraisal, created=last_lesson_pick.date, schoolkid=child, subject=last_lesson_pick.subject, teacher=last_lesson_pick.teacher)
 
-
-def main():
-
-    parser = argparse.ArgumentParser(description="The script hacks the school database")
-    parser.add_argument("-n", "--name", default="", help="Enter full name here", type=str)
-    parser.add_argument("-s", "--subject", default="", help="Enter subject here", type=str)
-    args = parser.parse_args()
-    name = args.name
-    subject = args.subject
-
-    if not name:
-        print("Empty name provided")
-    try:
-        child = Schoolkid.objects.get(full_name__contains=name)
-    except django.core.exceptions.MultipleObjectsReturned:
-        print("There are multiple IDs with provided name.")
-    except django.core.exceptions.ObjectDoesNotExist:
-        print("Schoolkid entry doesn't exist in database.")
-
-    if not subject:
-        print("Empty subject provided")
-    try:
-        subject = Subject.objects.get(title=subject, year_of_study=child.year_of_study)
-    except django.core.exceptions.ObjectDoesNotExist:
-        print(f"{subject} not found")
-    
-    fix_marks(child)
-    remove_chastisements(child)
-    create_commendation(child, subject)
+    fix_marks(child.id)
+    remove_chastisements(child.id)
+    create_commendation(child.id, school_subject, random_appraisal)
 
 
 if __name__ == '__main__':
