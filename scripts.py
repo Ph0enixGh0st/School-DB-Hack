@@ -1,7 +1,7 @@
 import random
 import sys
 
-import django.core.exceptions
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from datacenter.models import Chastisement, Commendation, Lesson, Mark, Schoolkid, Subject
 
 
@@ -38,17 +38,17 @@ def main():
 		print("Empty name provided")
 	try:
 		child = Schoolkid.objects.get(full_name__contains=name)
-	except Model.MultipleObjectsReturned:
+	except MultipleObjectsReturned:
 		print("There are multiple IDs with provided name.")
-	except Model.ObjectDoesNotExist:
+	except ObjectDoesNotExist:
 		print("Schoolkid entry doesn't exist in database.")
 
 	if not school_subject:
 		print("Empty school_subject provided")
 	try:
-        school_subject = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
-    except Model.ObjectDoesNotExist:
-        print(f"{school_subject} not found")
+        	school_subject = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
+    	except ObjectDoesNotExist:
+        	print(f"{school_subject} not found")
     
     appraisals = [
         "Молодец!",
