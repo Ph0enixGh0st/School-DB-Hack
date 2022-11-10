@@ -5,15 +5,15 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from datacenter.models import Chastisement, Commendation, Lesson, Mark, Schoolkid, Subject
 
 
-def fix_marks(child.id):
+def fix_marks(child):
 	Mark.objects.filter(schoolkid_id=child.id, points__lt=4).update(points=5)
 
 
-def remove_chastisements(child.id):
+def remove_chastisements(child):
 	Chastisement.objects.filter(schoolkid_id=child.id).delete()
 
 
-def create_commendation(child.id, school_subject, random_appraisal):
+def create_commendation(child, school_subject, random_appraisal):
 
 	lesson = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
 	lessons_pool = Lesson.objects.filter(year_of_study=child.year_of_study, 
@@ -85,9 +85,9 @@ def main():
     
     random_appraisal = random.choice(appraisals)
 
-    fix_marks(child.id)
-    remove_chastisements(child.id)
-    create_commendation(child.id, school_subject, random_appraisal)
+    fix_marks(child)
+    remove_chastisements(child)
+    create_commendation(child, school_subject, random_appraisal)
 
 
 if __name__ == '__main__':
