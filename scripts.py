@@ -74,8 +74,10 @@ def main():
 		child = Schoolkid.objects.get(full_name__contains=name)
 	except Schoolkid.MultipleObjectsReturned:
 		print("There are multiple IDs with provided name.")
+		sys.exit(1)
 	except Schoolkid.ObjectDoesNotExist:
 		print("Schoolkid entry doesn't exist in database.")
+		sys.exit(1)
 
 	if not school_subject:
 		print("Empty school_subject provided")
@@ -83,12 +85,14 @@ def main():
         	school_subject = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
     	except Subject.ObjectDoesNotExist:
         	print(f"{school_subject} not found")
+		sys.exit(1)
 		
 	try:
 		lesson = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
 	except Subject.ObjectDoesNotExist:
 		print("Lesson not found.")
-		
+		sys.exit(1)
+
 
     fix_marks(child)
     remove_chastisements(child)
