@@ -46,9 +46,9 @@ def remove_chastisements(child):
 	Chastisement.objects.filter(schoolkid_id=child.id).delete()
 
 
-def create_commendation(child, school_subject, lesson):
+def create_commendation(child, school_subject):
 	random_appraisal = random.choice(APPRAISALS)
-
+	lesson = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
 	lessons_pool = Lesson.objects.filter(year_of_study=child.year_of_study,
 					group_letter=child.group_letter,
 					subject__title=lesson).order_by('-date')
@@ -87,16 +87,10 @@ def main():
 	except Subject.ObjectDoesNotExist:
 		print(f"{school_subject} not found")
 		sys.exit(1)
-		
-	try:
-		lesson = Subject.objects.get(title=school_subject, year_of_study=child.year_of_study)
-	except Subject.ObjectDoesNotExist:
-		print("Lesson not found.")
-		sys.exit(1)
 
 	fix_marks(child)
 	remove_chastisements(child)
-	create_commendation(child, school_subject, lesson)
+	create_commendation(child, school_subject)
 
 
 if __name__ == '__main__':
